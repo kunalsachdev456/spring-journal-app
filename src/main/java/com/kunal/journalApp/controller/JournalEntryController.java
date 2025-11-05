@@ -13,7 +13,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/journal")
-public class JournalEntryControllerV2 {
+public class JournalEntryController {
 
     @Autowired
     private JournalEntryService journalEntryService;
@@ -44,7 +44,7 @@ public class JournalEntryControllerV2 {
     public ResponseEntity<JournalEntry> getJournalEntryById(@PathVariable ObjectId journalEntryId){
         Optional<JournalEntry> journalEntry = journalEntryService.findById(journalEntryId);
         if (journalEntry.isPresent()) {
-            return new ResponseEntity<>(journalEntry.get(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(journalEntry.get(), HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
