@@ -1,6 +1,7 @@
 package com.kunal.journalApp.service;
 
 import com.kunal.journalApp.entity.JournalEntry;
+import com.kunal.journalApp.entity.User;
 import com.kunal.journalApp.repository.JournalEntryRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +13,18 @@ import java.util.Optional;
 @Component
 public class JournalEntryService {
 
-@Autowired
-private JournalEntryRepository journalEntryRepository;
+    @Autowired
+    private JournalEntryRepository journalEntryRepository;
+
+    @Autowired
+    private UserService userService;
+
+    public void saveEntry(JournalEntry newEntry, String userName) {
+        User user = userService.findByUserName(userName);
+        JournalEntry saved = journalEntryRepository.save(newEntry);
+        user.getJournalEntries().add(saved);
+        userService.saveEntry(user);
+    }
 
     public void saveEntry(JournalEntry newEntry) {
         journalEntryRepository.save(newEntry);
@@ -27,7 +38,10 @@ private JournalEntryRepository journalEntryRepository;
         return journalEntryRepository.findById(id);
     }
 
-    public void deleteById(ObjectId id){
+    public void deleteById(ObjectId id, String userName){
+        User user = userService.findByUserName(userName);
+        user.getJournalEntries().removeIf(x -> x.getId().equals(id));
+        userService.saveEntry(user);
         journalEntryRepository.deleteById(id);
     }
 }
